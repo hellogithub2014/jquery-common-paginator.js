@@ -32,7 +32,7 @@ pc端通用分页列表组件`JqueryCommonPaginator`，一般来说一个带搜�
 2. 固定的分页参数格式`paginatorParam`,若用`typescript`表示
 	```js
 	paginatorParam:{
-		startIndex: number, // 分页的索引起点
+	   startIndex: number, // 分页的索引起点
 	   pageSize: number // 每页的大小
 	}
 	```
@@ -98,7 +98,7 @@ pc端通用分页列表组件`JqueryCommonPaginator`，一般来说一个带搜�
 	
 	```
 	DOM_SELECTORS: {
-		LIST_SELECTOR: string, // 列表渲染区域
+	   LIST_SELECTOR: string, // 列表渲染区域
 	   PAGE_NUMBER_SELECTOR: string, // 页码条区域
 	   PAGE_HINT_SELECTOR: string, // 提示用户当前数据范围，总共有多少数据
 	   PAGE_SIZE_SELECTOR: string, // 每页条数区域
@@ -140,9 +140,7 @@ pc端通用分页列表组件`JqueryCommonPaginator`，一般来说一个带搜�
 
 ```
 JqueryCommonPaginator.prototype.setUserParam;
-/**
-* 设置新的分页大小选项。 注意此时需要更新this.curPaginatorParam的pageSize属性
-*/
+// 设置新的分页大小选项。 注意此时需要更新this.curPaginatorParam的pageSize属性
 JqueryCommonPaginator.prototype.setPageSizeList;
 JqueryCommonPaginator.prototype.setDomSelectors;
 JqueryCommonPaginator.prototype.setBackendParamGenerator;
