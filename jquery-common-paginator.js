@@ -227,8 +227,6 @@ var JqueryCommonPaginator = (function() {
 
         $(this.options.DOM_SELECTORS.PAGE_SIZE_SELECTOR).html(pageSizeSelectorHtml);
         $(this.options.DOM_SELECTORS.PAGE_SIZE_SELECTOR + '  select').val(this.curPaginatorParam.pageSize); // 当前每页的大小
-
-        _bindPageSizeChangeHandler.call(this); // 绑定每页大小变更事件
     };
 
     /* ------------------------------------------    getter      ------------------------------------------------- */
@@ -365,6 +363,7 @@ var JqueryCommonPaginator = (function() {
         if (dataList.length > 0) { // 有数据时
             this.options.renderPaginatorArea.call(this, dataList.length, totalCount); // 渲染分页区域
             _renderList.call(this, dataList); // 渲染列表区域
+            _bindPageSizeChangeHandler.call(this); // 绑定每页大小变更事件
         } else { // 无数据时
             this.options.renderEmptyList.call(this);
         }

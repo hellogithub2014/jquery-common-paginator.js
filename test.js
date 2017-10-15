@@ -62,7 +62,7 @@
          * @param {any} backendInterfaceParam 后端接口请求参数
          */
         function newFetchData(backendInterfaceParam) {
-            var success = false;
+            var success = true;
             var response = mockResponse;
             var error = "出错了";
             if (success) {
