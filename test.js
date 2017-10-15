@@ -62,7 +62,7 @@
          * @param {any} backendInterfaceParam 后端接口请求参数
          */
         function newFetchData(backendInterfaceParam) {
-            var success = true;
+            var success = false;
             var response = mockResponse;
             var error = "出错了";
             if (success) {
@@ -78,7 +78,20 @@
          * @param {any} error 
          */
         function mockFailedFunc(error) {
-            alert(error);
+            var html = '<div style="height: 300px; text-align:center">啊哦~ 出错了~ </div>';
+            $(this.options.DOM_SELECTORS.LIST_SELECTOR).html(html);
+
+            $.toast({
+                text: error,
+                showHideTransition: 'slide', // It can be plain, fade or slide
+                bgColor: 'blue', // Background color for toast
+                textColor: '#eee', // text color
+                allowToastClose: false, // Show the close button or not
+                hideAfter: 3000, // `false` to make it sticky or time in miliseconds to hide after
+                stack: 5, // `fakse` to show one stack at a time count showing the number of toasts that can be shown at once
+                textAlign: 'left', // Alignment of text i.e. left, right, center
+                position: 'mid-center' // bottom-left or bottom-right or bottom-center or top-left or top-right or top-center or mid-center or an object representing the left, right, top, bottom values to position the toast on page
+            })
         }
 
         /**
@@ -128,6 +141,11 @@
             };
         }
 
+        function mockRenderEmptyList() {
+            var html = '<div style="height: 300px; text-align:center">啊哦~ 无数据~ </div>';
+            $(this.options.DOM_SELECTORS.LIST_SELECTOR).html(html);
+        }
+
         var paginator = new JqueryCommonPaginator();
         paginator
             .setPageSizeList(mockPageSizeList)
@@ -139,6 +157,7 @@
             .setGetTotalCountFromResponseFunc(mockGetTotalCountFromResponseFunc)
             .setItemRenderFunc(mockItemRenderFunc)
             .setItemRenderOptionFunc(mockItemRenderOptionFunc)
+            .setRenderEmptyListFunc(mockRenderEmptyList)
             // .setPaginatorAreaRenderFunc();
             .setUserParam(mockUserParam)
             .trigger(); // 初始化时需要使用trigger()显式进行第一次搜索

@@ -1,7 +1,8 @@
 /**
  * pc端通用分页列表组件。
  *
- * 依赖： jquery、jquery-page两个库
+ * 依赖： jquery、jquery-page两个文件
+ * 另外为了在成功或失败时提示用户，推荐使用jquery-toast-plugin(https://github.com/kamranahmedse/jquery-toast-plugin)
  *
  * 列表组件有 jquery-common-paginator.js和jquery-common-paginator.css两个文件。
  * 其中css文件用于简单的设置如下dom结果的一些样式，使用者如果想自定义样式，可以不使用此css文件
@@ -146,7 +147,6 @@ var JqueryCommonPaginator = (function() {
 
     defaultOptions.failedFunc = function(error) { // 用户自定义，错误函数
         console.error("后台请求出错", error, "入参:  ", this.options.userParam, this.curPaginatorParam);
-        // TODO:寻找jquery-toast库
     };
 
     defaultOptions.getListFromResponse = function(response) { // 从响应数据中获取列表的函数
@@ -178,6 +178,15 @@ var JqueryCommonPaginator = (function() {
     defaultOptions.itemRenderOptionFunc = function(itemModel) {
         return {};
     };
+
+    /**
+     * 当请求成功，但列表为空时，渲染空白的列表区域
+     */
+    defaultOptions.renderEmptyList = function() {
+        // TODO 使用默认的设置图片
+        var html = '<div style="height: 300 px;">无数据</div>';
+        $(this.options.DOM_SELECTORS.LIST_SELECTOR).html(html);
+    }
 
     /**
      * 渲染分页区域，并绑定点击事件
@@ -262,9 +271,8 @@ var JqueryCommonPaginator = (function() {
         this.setUserParam(this.options.userParam);
     };
 
-
     /**
-     * 选项属性设置帮助函数. TODO:测试所有setter
+     * 选项属性设置帮助函数.
      *
      * @param {any} tagetOptionName  选项的目标属性名称
      * @param {any} newOptionValue 想要设置的新值
@@ -326,6 +334,10 @@ var JqueryCommonPaginator = (function() {
         return _setterHelper.call(this, "itemRenderOptionFunc", newItemRenderOptionFunc, "Function");
     };
 
+    JqueryCommonPaginator.prototype.setRenderEmptyListFunc = function(newRenderFunc) {
+        return _setterHelper.call(this, "renderEmptyList", newRenderFunc, "Function");
+    };
+
     JqueryCommonPaginator.prototype.setPaginatorAreaRenderFunc = function(newRenderFunc) {
         return _setterHelper.call(this, "renderPaginatorArea", newRenderFunc, "Function");
     };
@@ -350,9 +362,12 @@ var JqueryCommonPaginator = (function() {
     function _successFunc(response) {
         var dataList = this.options.getListFromResponse.call(this, response);
         var totalCount = this.options.getTotalCountFromResponse.call(this, response);
-
-        this.options.renderPaginatorArea.call(this, dataList.length, totalCount); // 渲染分页区域
-        _renderList.call(this, dataList); // 渲染列表区域
+        if (dataList.length > 0) { // 有数据时
+            this.options.renderPaginatorArea.call(this, dataList.length, totalCount); // 渲染分页区域
+            _renderList.call(this, dataList); // 渲染列表区域
+        } else { // 无数据时
+            this.options.renderEmptyList.call(this);
+        }
     };
 
     /**
