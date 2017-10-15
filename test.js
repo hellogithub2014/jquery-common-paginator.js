@@ -3,13 +3,17 @@
         var paginator = new JqueryCommonPaginator();
 
         var mockUserParam = {
-            prcCode: "AS03GETTSKINFLISTCONDITIONS",
-            path: "lc07SysTask",
-            usrTyp: "1",
-            key: "",
-            startTime: "",
-            endTime: "",
-            tskSts: ""
+            asistParam: {
+                prcCode: "AS03GETTSKINFLISTCONDITIONS",
+                path: "lc07SysTask",
+            },
+            mainParam: {
+                usrTyp: "1",
+                key: "",
+                startTime: "",
+                endTime: "",
+                tskSts: ""
+            }
         };
 
         var mockPageSizeList = [3, 6, 9];
