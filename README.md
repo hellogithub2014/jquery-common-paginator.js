@@ -1,8 +1,7 @@
 # jquery-common-paginator.js
 pc端通用分页列表组件`JqueryCommonPaginator`，一般来说一个带搜索的分页列表页面布局类似如下：
 
-![image](http://github.com/hellogithub2014/jquery-common-paginator.js/raw/master/images/paginator-for-present.png)
-
+![Image text](https://github.com/hellogithub2014/jquery-common-paginator.js/raw/master/images/paginator-for-present.png)
 
 此组件可以
 
