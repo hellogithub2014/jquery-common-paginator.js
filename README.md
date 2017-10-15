@@ -1,7 +1,8 @@
 # jquery-common-paginator.js
 pc端通用分页列表组件`JqueryCommonPaginator`，一般来说一个带搜索的分页列表页面布局类似如下：
 
-![](/Users/liubin/Desktop/paginator-for-present.png)
+![image](http://github.com/hellogithub2014/jquery-common-paginator.js/raw/master/images/paginator-for-present.png)
+
 
 此组件可以
 
@@ -20,7 +21,6 @@ pc端通用分页列表组件`JqueryCommonPaginator`，一般来说一个带搜�
 	
 ## 必需关键配置
 使用此组件使用了几个关键配置，用户必须提供这些配置。
-
 1. 自定义搜索参数的格式`userParam`
 
 	```
@@ -48,12 +48,12 @@ pc端通用分页列表组件`JqueryCommonPaginator`，一般来说一个带搜�
 	
 	```
 	 /**
-		* 获取后台数据接口
-		*
-		* 注意：若想自定义此函数，要求是
-		* 1. 在成功拿到想要的响应数据后，显式的调用this.getSuccessFunc(response)
-		* 2. 失败时，显式的调用this.getFailedFunc(error)
-		*/
+	  * 获取后台数据接口
+	  *
+	  * 注意：若想自定义此函数，要求是
+	  * 1. 在成功拿到想要的响应数据后，显式的调用this.getSuccessFunc(response)
+	  * 2. 失败时，显式的调用this.getFailedFunc(error)
+	  */
 	fetchData : (backendInterfaceParam:any)=>void
 	```
 	
@@ -72,8 +72,7 @@ pc端通用分页列表组件`JqueryCommonPaginator`，一般来说一个带搜�
 	
 	```
 	//renderOptionFunc是可能影响结果的其他参数，可以根据数据的不同而不同
-	itemRenderFunc：(itemModel:any, renderOptionFunc:(itemModel:any
-)=>any)=>string;
+	itemRenderFunc：(itemModel:any, renderOptionFunc:(itemModel:any)=>any)=>string;
 	```
 
 ## 可选配置
@@ -151,7 +150,8 @@ JqueryCommonPaginator.prototype.setBackendParamGenerator;
 JqueryCommonPaginator.prototype.setFetchDataFunc;
 JqueryCommonPaginator.prototype.setFailedFunc;
 JqueryCommonPaginator.prototype.setGetListFromResponseFunc;
-JqueryCommonPaginator.prototype.setGetTotalCountFromResponseFunc;    JqueryCommonPaginator.prototype.setItemRenderFunc;
+JqueryCommonPaginator.prototype.setGetTotalCountFromResponseFunc;
+JqueryCommonPaginator.prototype.setItemRenderFunc;
 JqueryCommonPaginator.prototype.setItemRenderOptionFunc;
 JqueryCommonPaginator.prototype.setRenderEmptyListFunc;
 JqueryCommonPaginator.prototype.setPaginatorAreaRenderFunc;
