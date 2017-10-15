@@ -64,11 +64,9 @@ var JqueryCommonPaginator = (function() {
      * mainParam  必选主要的参数，推荐在其中放置你的用户搜索条件参数
      */
     defaultOptions.userParam = {};
-    defaultOptions.PAGE_SIZE_LIST = [5, 10, 20]; // 用户自定义，默认的每页条数数据
-    defaultOptions.INIT_PAGINATOR_PARAM = { // 初始分页参数
-        startIndex: 0,
-        pageSize: defaultOptions.PAGE_SIZE_LIST[0]
-    };
+
+    // 用户自定义，默认的每页条数数据
+    defaultOptions.PAGE_SIZE_LIST = [5, 10, 20];
 
     // 相关的页面dom选型器。用户可自定义
     defaultOptions.DOM_SELECTORS = {
@@ -145,11 +143,13 @@ var JqueryCommonPaginator = (function() {
         });
     };
 
-    defaultOptions.failedFunc = function(error) { // 用户自定义，错误函数
+    // 用户自定义，错误函数
+    defaultOptions.failedFunc = function(error) {
         console.error("后台请求出错", error, "入参:  ", this.options.userParam, this.curPaginatorParam);
     };
 
-    defaultOptions.getListFromResponse = function(response) { // 从响应数据中获取列表的函数
+    // 从响应数据中获取列表的函数
+    defaultOptions.getListFromResponse = function(response) {
         var dataList = [];
         var prcCodeSuffix = this.options.userParam.asistParam.prcCode.slice(4); //去掉前4位
         dataList = response.INFBDY[prcCodeSuffix + 'Z1'];
@@ -157,7 +157,8 @@ var JqueryCommonPaginator = (function() {
         return dataList;
     };
 
-    defaultOptions.getTotalCountFromResponse = function(response) { // 从响应数据中获取列表总条数的函数
+    // 从响应数据中获取总数据条数的函数
+    defaultOptions.getTotalCountFromResponse = function(response) {
         var totalCount = 0;
         var prcCodeSuffix = this.options.userParam.asistParam.prcCode.slice(4); //去掉前4位
         totalCount = (response.INFBDY[prcCodeSuffix + 'Z2'][0]).totalCount;
@@ -250,6 +251,9 @@ var JqueryCommonPaginator = (function() {
 
     /* ------------------------------------------    setter      ------------------------------------------------- */
 
+    /**
+     * 更新用户自定义参数
+     */
     JqueryCommonPaginator.prototype.setUserParam = function(newUserParam) {
         this.options.userParam = newUserParam;
 
@@ -297,10 +301,6 @@ var JqueryCommonPaginator = (function() {
 
         return _setterHelper.call(this, "PAGE_SIZE_LIST", newPageSizeList, "Array");
     };
-
-    // JqueryCommonPaginator.prototype.setInitPaginatorParam = function(newInitPaginatorParam) {
-    //     return _setterHelper.call(this, "INIT_PAGINATOR_PARAM", newInitPaginatorParam, "Object");
-    // };
 
     JqueryCommonPaginator.prototype.setDomSelectors = function(newSelectors) {
         return _setterHelper.call(this, "DOM_SELECTORS", newSelectors, "Object");
