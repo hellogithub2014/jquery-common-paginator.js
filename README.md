@@ -173,6 +173,59 @@ paginator
   .setUserParam(mockUserParam);
 ```
 
+## 其他API
+
+1. **`getDefaultOptions`** - 获取默认配置
+	
+	```js
+	getDefaultOptions:()=>Object
+	``` 
+	
+2. **`getOptions`** - 获取当前配置
+	
+	```js
+	getOptions:()=>Object
+	``` 
+	
+3. **`getCurrentList`** - 获取当前页的列表数据
+	
+	```js
+	getCurrentList:()=>any[]
+	``` 
+	
+4. **`deleteItem`** - 删除当前页单条数据
+	
+	```js
+	deleteItem:(index)=>void
+	``` 
+	
+5. **`deletePage`** - 删除当前页所有数据
+	
+	```js
+	deletePage:()=>void
+	``` 
+	
+6. **`updateItem`** - 更新当前页单条数据
+	
+	```js
+	/**
+	 * index: 待更新的数据索引
+	 * newItemModel: 新的列表项数据
+	 * goFirstPageAfterUpdate:更新后是否回到第一页 true/false
+	 */
+	updateItem:(index, newItemModel, goFirstPageAfterUpdate)=>void
+	``` 
+	
+7. **`updatePage`** - 更新当前页所有数据
+	
+	```js
+	/**
+	 * newDataList: 新的列表数据。提示：可以利用getCurrentList获取当前页的列表数据
+	 * goFirstPageAfterUpdate:更新后是否回到第一页 true/false
+	 */
+	updatePage:(newDataList, goFirstPageAfterUpdate)=>void
+	``` 
+
 ## 使用
 在准备工作做好后，第一次需要使用`trigger()`显式触发第一次搜索：
 

@@ -40,10 +40,10 @@
 
         /**
          * 如何使用userParam和paginatorParam生成真正的接口请求体
-         * 
-         * @param {any} userParam 
-         * @param {any} paginatorParam 
-         * @returns 
+         *
+         * @param {any} userParam
+         * @param {any} paginatorParam
+         * @returns
          */
         function mockBackendParamGenerator(userParam, paginatorParam) {
             return {
@@ -54,11 +54,11 @@
 
         /**
          * 如何使用新的后台数据请求方式，例如ajax
-         * 
+         *
          * 注意：若想自定义此函数，要求是
          * 1. 在成功拿到想要的响应数据后，显式的调用this.getSuccessFunc().call(this, response);
          * 2. 失败时，显式的调用this.getFailedFunc().call(this, error);
-         * 
+         *
          * @param {any} backendInterfaceParam 后端接口请求参数
          */
         function newFetchData(backendInterfaceParam) {
@@ -74,8 +74,8 @@
 
         /**
          * 失败处理函数
-         * 
-         * @param {any} error 
+         *
+         * @param {any} error
          */
         function mockFailedFunc(error) {
             var html = '<div style="height: 300px; text-align:center">啊哦~ 出错了~ </div>';
@@ -96,19 +96,19 @@
 
         /**
          * 如何从响应体中提取列表数据
-         * 
-         * @param {any} response 
-         * @returns 
+         *
+         * @param {any} response
+         * @returns
          */
         function mockGetListFromResponse(response) {
-            return response.list;
+            return response.list.slice(0);
         }
 
         /**
          * 如何从响应中提取数据总条数
-         * 
-         * @param {any} response 
-         * @returns 
+         *
+         * @param {any} response
+         * @returns
          */
         function mockGetTotalCountFromResponseFunc(response) {
             return response.totalCount;
@@ -116,10 +116,10 @@
 
         /**
          * 如何渲染每一条数据
-         * 
+         *
          * @param {any} itemModel 列表项数据
          * @param {any} renderOptionFunc 渲染选项生成函数
-         * @returns 
+         * @returns
          */
         function mockItemRenderFunc(itemModel, renderOptionFunc) {
             var renderOption = renderOptionFunc(itemModel);
@@ -130,9 +130,9 @@
 
         /**
          * 渲染选项生成函数,在渲染列表项时，若还需要其他参数，请使用此函数生成
-         * 
-         * @param {any} itemModel 
-         * @returns 
+         *
+         * @param {any} itemModel
+         * @returns
          */
         function mockItemRenderOptionFunc(itemModel) {
             return {
@@ -165,7 +165,26 @@
         $("#search-btn").click(function() {
             mockUserParam.mainParam.key = $("#searchKeyWord").val();
             paginator.setUserParam(mockUserParam); // 之后每次只要调用setUserParam均会自动搜索
-        })
+        });
 
+        $("#update-btn-1").click(function() {
+            paginator.updateItem(0, { name: "更新后名字1" }, true);
+        });
+
+        $("#update-btn-2").click(function() {
+            paginator.updateItem(0, { name: "更新后名字2" }, false);
+        });
+
+        $("#update-all-btn").click(function() {
+            paginator.updatePage(new Array(mockPageSizeList[0]).fill({ name: "更新后名字" }));
+        });
+
+        $("#delete-btn").click(function() {
+            paginator.deleteItem(0);
+        });
+
+        $("#delete-all-btn").click(function() {
+            paginator.deletePage();
+        });
     }
 })();

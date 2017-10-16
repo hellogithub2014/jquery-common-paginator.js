@@ -50,6 +50,7 @@ var JqueryCommonPaginator = (function() {
                 pageSize: this.options.PAGE_SIZE_LIST[0]
             };
             this.curPageIndex = 1; // 当前选中的页码索引，以1为起点
+            this.currentList = []; // 当前页的列表数据
             this.isTriggered = false; // 是否调用过trigger()
         } else {
             return new JqueryCommonPaginator(options);
@@ -247,6 +248,10 @@ var JqueryCommonPaginator = (function() {
         return this.getOptions().failedFunc;
     };
 
+    JqueryCommonPaginator.prototype.getCurrentList = function() { // 获取当前页的列表数据
+        return this.currentList;
+    };
+
     /* ------------------------------------------    setter      ------------------------------------------------- */
 
     /**
@@ -262,6 +267,84 @@ var JqueryCommonPaginator = (function() {
             _refresh.call(this);
         }
         return this;
+    };
+
+    /**
+     * 删除当前页第index条数据
+     *
+     * 注意点：
+     * 1. 当前页只剩一条数据，此时需要获取上一页的数据，同时页面选中的页码减1（此时还要注意不要让页码变为0或负数）
+     * 2. 当前页还有多条数据，直接刷新刷新列表
+     */
+    JqueryCommonPaginator.prototype.deleteItem = function(index) {
+        if (this.currentList.length > 1) { //当前页还有多条数据
+            _refresh.call(this); // 直接刷新当前页
+            // 体验优化：不是刷新整个页面，而是只删掉第index条，同时将下一页的第一条放到当前页末尾，可选的动画
+            return;
+        }
+
+        // 只剩一条数据时
+        this.curPageIndex = (this.curPageIndex > 1) ? (this.curPageIndex - 1) : 1;
+        this.curPaginatorParam = Object.assign(this.curPaginatorParam, { // 更新当前分页参数
+            startIndex: this.curPaginatorParam.pageSize * (this.curPageIndex - 1)
+        });
+
+        _refresh.call(this);
+    };
+
+    /**
+     * 删除当前页所有数据
+     *
+     * 注意点：
+     * 1. 页面选中的页码减1（此时还要注意不要让页码变为0或负数）
+     */
+    JqueryCommonPaginator.prototype.deletePage = function() {
+        this.curPageIndex = (this.curPageIndex > 1) ? (this.curPageIndex - 1) : 1;
+        this.curPaginatorParam = Object.assign(this.curPaginatorParam, { // 更新当前分页参数
+            startIndex: this.curPaginatorParam.pageSize * (this.curPageIndex - 1)
+        });
+
+        _refresh.call(this);
+    };
+
+    /**
+     * 更新当前页第index条数据, index从0开始计算
+     *
+     * 注意点：
+     * 1. 若列表是以更新时间倒序排列的，那么更新此条时，页面需要跳转到第一页
+     * 2. 若列表是以其他非时间敏感字段排序的，那么只需重新渲染当前页即可
+     *
+     * 为此提供goFirstPageAfterUpdate参数，让用户来决定
+     */
+    JqueryCommonPaginator.prototype.updateItem = function(index, newItemModel, goFirstPageAfterUpdate) {
+        var goFirst = goFirstPageAfterUpdate || false; // 默认为false
+
+        if (!goFirst) { // 如果留在当前页
+            this.currentList.splice(index, 1, newItemModel); // 更新第index条数据
+            _renderList.call(this, this.currentList); // 重新渲染列表区域
+        } else { // 如果去第一页
+            this.setUserParam(this.options.userParam); // 直接刷新数据即可
+        }
+    };
+
+    /**
+     * 更新当前页所有数据
+     *
+     * 注意点：
+     * 1. 若列表是以更新时间倒序排列的，那么更新时，页面需要跳转到第一页
+     * 2. 若列表是以其他非时间敏感字段排序的，那么只需重新渲染当前页即可
+     *
+     * 为此提供goFirstPageAfterUpdate参数，让用户来决定
+     */
+    JqueryCommonPaginator.prototype.updatePage = function(newDataList, goFirstPageAfterUpdate) {
+        var goFirst = goFirstPageAfterUpdate || false; // 默认为false
+
+        if (!goFirst) { // 如果留在当前页
+            this.currentList = newDataList; // 更新列表数据
+            _renderList.call(this, this.currentList); // 重新渲染列表区域
+        } else { // 如果去第一页
+            this.setUserParam(this.options.userParam); // 直接刷新数据即可
+        }
     };
 
     /**
@@ -344,7 +427,7 @@ var JqueryCommonPaginator = (function() {
 
     /**
      * 使用当前的参数刷新列表
-     * 
+     *
      */
     function _refresh() {
         // 生成真正的后台接口入参
@@ -360,6 +443,7 @@ var JqueryCommonPaginator = (function() {
     function _successFunc(response) {
         var dataList = this.options.getListFromResponse.call(this, response);
         var totalCount = this.options.getTotalCountFromResponse.call(this, response);
+        this.currentList = dataList; // 缓存当前页的列表数据
         if (dataList.length > 0) { // 有数据时
             this.options.renderPaginatorArea.call(this, dataList.length, totalCount); // 渲染分页区域
             _renderList.call(this, dataList); // 渲染列表区域
