@@ -198,7 +198,15 @@ paginator
 	```js
 	deleteItem:(index)=>void
 	``` 
+5. **`batchDelete`** - 批量删除当前页若干数据
 	
+	```js
+	/**
+	 * indexList:要删除列表项的索引数组
+	 */
+	batchDelete:(indexList)=>void
+	``` 
+
 5. **`deletePage`** - 删除当前页所有数据
 	
 	```js
@@ -215,7 +223,18 @@ paginator
 	 */
 	updateItem:(index, newItemModel, goFirstPageAfterUpdate)=>void
 	``` 
+5. **`batchUpdate`** - 批量更新当前页若干数据
 	
+	```js
+	/**
+	 * indexList:要删除列表项的索引数组
+	 * newItemModelList: 对应更新后数据模型数组，与indexList一一对应。
+	 *			newItemModelList[0]是第indexList[0]条列表项的新数据模型
+	 * goFirstPageAfterUpdate:更新后是否回到第一页 true/false
+	 */
+	batchUpdate:(indexList, newItemModelList, goFirstPageAfterUpdate)=>void
+	``` 
+
 7. **`updatePage`** - 更新当前页所有数据
 	
 	```js
