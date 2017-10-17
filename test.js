@@ -175,6 +175,10 @@
             paginator.updateItem(0, { name: "更新后名字2" }, false);
         });
 
+        $("#batch-update-btn").click(function() {
+            paginator.batchUpdate([1, 3], new Array(2).fill({ name: "批量更新的名称" }));
+        });
+
         $("#update-all-btn").click(function() {
             paginator.updatePage(new Array(mockPageSizeList[0]).fill({ name: "更新后名字" }));
         });
@@ -185,6 +189,10 @@
 
         $("#delete-all-btn").click(function() {
             paginator.deletePage();
+        });
+
+        $("#batch-delete-btn").click(function() {
+            paginator.batchDelete([0, 1, 2, 3, 4]);
         });
     }
 })();

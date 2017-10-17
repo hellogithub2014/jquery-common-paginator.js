@@ -160,9 +160,8 @@ var JqueryCommonPaginator = (function() {
 
     // 从响应数据中获取总数据条数的函数
     defaultOptions.getTotalCountFromResponse = function(response) {
-        var totalCount = 0;
         var prcCodeSuffix = this.options.userParam.asistParam.prcCode.slice(4); //去掉前4位
-        totalCount = (response.INFBDY[prcCodeSuffix + 'Z2'][0]).totalCount;
+        var totalCount = (response.INFBDY[prcCodeSuffix + 'Z2'][0]).totalCount;
         return totalCount;
     };
 
@@ -293,6 +292,36 @@ var JqueryCommonPaginator = (function() {
     };
 
     /**
+     * 批量删除当前页若干条条数据
+     * 
+     * indexList:要删除列表项的索引数组
+     *
+     * 注意点：
+     * 1. 当前页数据被删完，此时需要获取上一页的数据，同时页面选中的页码减1（此时还要注意不要让页码变为0或负数）
+     * 2. 当前页还有多条数据，直接刷新刷新列表
+     */
+    JqueryCommonPaginator.prototype.batchDelete = function(indexList) {
+        if (!indexList || Object.prototype.toString.call(indexList).slice(8, -1) !== "Array") {
+            console.error("indexList 需要是一个Array", "你设置的值是: ", indexList);
+            return this;
+        }
+
+        if (this.currentList.length > indexList.length) { // 当前页还有多余数据
+            _refresh.call(this); // 直接刷新当前页
+            // 体验优化：不是刷新整个页面，而是只删掉第index条，同时将下一页的第一条放到当前页末尾，可选的动画
+            return;
+        }
+
+        // 没有多余数据时
+        this.curPageIndex = (this.curPageIndex > 1) ? (this.curPageIndex - 1) : 1;
+        this.curPaginatorParam = Object.assign(this.curPaginatorParam, { // 更新当前分页参数
+            startIndex: this.curPaginatorParam.pageSize * (this.curPageIndex - 1)
+        });
+
+        _refresh.call(this);
+    };
+
+    /**
      * 删除当前页所有数据
      *
      * 注意点：
@@ -324,6 +353,41 @@ var JqueryCommonPaginator = (function() {
             _renderList.call(this, this.currentList); // 重新渲染列表区域
         } else { // 如果去第一页
             this.setUserParam(this.options.userParam); // 直接刷新数据即可
+        }
+    };
+
+    /**
+     * 批量更新当前页若干条数据, index从0开始计算
+     * 
+     * indexList: 要删除列表项的索引数组，例如要删除第2、4条，那么传入[2,4]
+     * newItemModelList: 对应更新后数据模型数组，与indexList一一对应。
+     *      newItemModelList[0]是第indexList[0]条列表项的新数据模型
+     * 
+     * 注意点：
+     * 1. 若列表是以更新时间倒序排列的，那么更新时，页面需要跳转到第一页
+     * 2. 若列表是以其他非时间敏感字段排序的，那么只需重新渲染当前页即可
+     *
+     * 为此提供goFirstPageAfterUpdate参数，让用户来决定
+     */
+    JqueryCommonPaginator.prototype.batchUpdate = function(indexList, newItemModelList, goFirstPageAfterUpdate) {
+        if (!indexList || !newItemModelList ||
+            Object.prototype.toString.call(indexList).slice(8, -1) !== "Array" ||
+            Object.prototype.toString.call(newItemModelList).slice(8, -1) !== "Array"
+        ) {
+            console.error("indexList 和newItemModelList 需要是一个Array",
+                "你设置的值是: ", indexList, newItemModelList);
+            return this;
+        }
+
+        var goFirst = goFirstPageAfterUpdate || false; // 默认为false
+
+        if (!goFirst) { // 如果留在当前页
+            indexList.forEach(function(value, i) {
+                this.currentList[value] = newItemModelList[i];
+            }, this); // 显示传递this值
+            _renderList.call(this, this.currentList); // 重新渲染列表区域
+        } else { // 如果去第一页
+            this.setUserParam(this.options.userParam); // 直接刷新第一页数据即可
         }
     };
 
