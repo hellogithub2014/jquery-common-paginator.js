@@ -135,6 +135,12 @@ pc端通用分页列表组件`JqueryCommonPaginator`，一般来说一个带搜�
 	renderPaginatorArea: (dataListLength:number,totalCount:number)=>void;
 	```
 
+7. 不管成功或失败都需要执行的逻辑`actionFinally`,例如如果列表页在一个iframe中，你可能需要更新iframe的高度。
+1. 
+	```js
+	actionFinally: ()=>void;
+	```
+
 ## 添加配置
 以上必需和可选配置均可以使用一一对应的函数来配置，它们是：
 

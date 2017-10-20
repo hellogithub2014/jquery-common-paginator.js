@@ -71,10 +71,10 @@ var JqueryCommonPaginator = (function() {
 
     // 相关的页面dom选型器。用户可自定义
     defaultOptions.DOM_SELECTORS = {
-        LIST_SELECTOR: "#data-list", // 列表渲染区域
-        PAGE_NUMBER_SELECTOR: "#page-number-area", // 页码条区域
-        PAGE_HINT_SELECTOR: "#page-hinter-area", // 提示用户当前数据范围，总共有多少数据
-        PAGE_SIZE_SELECTOR: "#page-size-area", // 每页条数区域
+        LIST_SELECTOR: "#crm-data-list", // 列表渲染区域
+        PAGE_NUMBER_SELECTOR: "#crm-page-number-area", // 页码条区域
+        PAGE_HINT_SELECTOR: "#crm-page-hinter-area", // 提示用户当前数据范围，总共有多少数据
+        PAGE_SIZE_SELECTOR: "#crm-page-size-area", // 每页条数区域
     };
 
     /**
@@ -135,18 +135,47 @@ var JqueryCommonPaginator = (function() {
                 } else {
                     _this.getFailedFunc().call(_this, response.ERRMSG);
                 }
+                _this.options.actionFinally.call(_this);
+
             },
             error: function(XMLHttpRequest, textStatus, errorThrown) {
                 if (errorThrown) {
                     _this.getFailedFunc().call(_this, errorThrown);
+                    _this.options.actionFinally.call(_this);
                 }
             }
         });
     };
 
+    // 用户自定义，在执行完成功函数后，后续的处理
+    defaultOptions.actionFinally = function() {};
+
     // 用户自定义，错误函数
     defaultOptions.failedFunc = function(error) {
         console.error("后台请求出错", error, "入参:  ", this.options.userParam, this.curPaginatorParam);
+        // 清空分页区域
+        $(this.options.DOM_SELECTORS.PAGE_NUMBER_SELECTOR).empty();
+        $(this.options.DOM_SELECTORS.PAGE_HINT_SELECTOR).empty();
+        $(this.options.DOM_SELECTORS.PAGE_SIZE_SELECTOR).empty();
+
+        var html = '<div class="crm-no-info-img"></div>';
+        // +'<div class="text-center">啊哦，获取数据失败~ 原因：' + error + '</div>';
+        $(this.options.DOM_SELECTORS.LIST_SELECTOR).html(html);
+
+        // 利用jquery.toast库
+        // $.toast({
+        //     heading: title,
+        //     text: message,
+        //     loader: false,
+        //     showHideTransition: 'fade',
+        //     icon: "error",
+        //     textColor: '#fff',
+        //     allowToastClose: true,
+        //     hideAfter: 1200,
+        //     stack: 5,
+        //     textAlign: 'left',
+        //     position: 'mid-center'
+        // });
     };
 
     // 从响应数据中获取列表的函数
@@ -184,9 +213,17 @@ var JqueryCommonPaginator = (function() {
      * 当请求成功，但列表为空时，渲染空白的列表区域
      */
     defaultOptions.renderEmptyList = function() {
-        // TODO 使用默认的设置图片
-        var html = '<div style="height: 300 px;">无数据</div>';
+        // 清空分页区域
+        $(this.options.DOM_SELECTORS.PAGE_NUMBER_SELECTOR).empty();
+        $(this.options.DOM_SELECTORS.PAGE_HINT_SELECTOR).empty();
+        $(this.options.DOM_SELECTORS.PAGE_SIZE_SELECTOR).empty();
+
+        var html = `
+            <div class="crm-no-info-img"></div>
+            <div class="text-center">查询不到对应的数据~</div>
+        `;
         $(this.options.DOM_SELECTORS.LIST_SELECTOR).html(html);
+
     }
 
     /**
@@ -293,7 +330,7 @@ var JqueryCommonPaginator = (function() {
 
     /**
      * 批量删除当前页若干条条数据
-     * 
+     *
      * indexList:要删除列表项的索引数组
      *
      * 注意点：
@@ -358,11 +395,11 @@ var JqueryCommonPaginator = (function() {
 
     /**
      * 批量更新当前页若干条数据, index从0开始计算
-     * 
+     *
      * indexList: 要删除列表项的索引数组，例如要删除第2、4条，那么传入[2,4]
      * newItemModelList: 对应更新后数据模型数组，与indexList一一对应。
      *      newItemModelList[0]是第indexList[0]条列表项的新数据模型
-     * 
+     *
      * 注意点：
      * 1. 若列表是以更新时间倒序排列的，那么更新时，页面需要跳转到第一页
      * 2. 若列表是以其他非时间敏感字段排序的，那么只需重新渲染当前页即可
@@ -430,7 +467,7 @@ var JqueryCommonPaginator = (function() {
      */
     function _setterHelper(tagetOptionName, newOptionValue, typeToCheck) {
         if (!newOptionValue || Object.prototype.toString.call(newOptionValue).slice(8, -1) !== typeToCheck) {
-            console.error("tagetOptionName 需要是一个" + typeToCheck, "你设置的值是: ", newOptionValue);
+            console.error(tagetOptionName + "需要是一个" + typeToCheck, "你设置的值是: ", newOptionValue);
             return this;
         }
         var temp = {};
@@ -457,6 +494,10 @@ var JqueryCommonPaginator = (function() {
 
     JqueryCommonPaginator.prototype.setFetchDataFunc = function(newFetchDataFunc) {
         return _setterHelper.call(this, "fetchData", newFetchDataFunc, "Function");
+    };
+
+    JqueryCommonPaginator.prototype.setActionFinally = function(newActionFinally) {
+        return _setterHelper.call(this, "actionFinally", newActionFinally, "Function");
     };
 
     JqueryCommonPaginator.prototype.setFailedFunc = function(newFailedFunc) {

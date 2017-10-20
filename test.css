@@ -1,0 +1,20 @@
+.jq-toast-single.jq-has-icon h2 {
+    width: 175px;
+    font-size: 16px;
+}
+
+.jq-toast-single.jq-has-icon .close-jq-toast-single {
+    top: 7px;
+    font-size: 27px;
+}
+
+.jq-toast-single.jq-has-icon.jq-icon-error {
+    width: 175px;
+    font-size: 14px;
+    /*background-color: #f66;*/
+}
+
+.jq-toast-single.jq-has-icon.jq-icon-success {
+    width: 175px;
+    font-size: 14px;
+}
