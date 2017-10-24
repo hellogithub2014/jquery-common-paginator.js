@@ -32,7 +32,7 @@
  * paginator.setUserParam(userParam).trigger(); // 初始化时需要使用trigger()显式触发搜索
  *
  * setTimeout(function() {
- *      userParam = Object.assign(userParam, { tskSts: "0" });
+ *      userParam = $.extend(userParam, { tskSts: "0" });
  *      paginator.setUserParam(userParam); // 之后只要更改参数就会自动进行搜索
  * }, 3000);
  *
@@ -44,7 +44,7 @@ var JqueryCommonPaginator = (function() {
     function JqueryCommonPaginator(options) {
         // 作用域安全的构造函数
         if (this instanceof JqueryCommonPaginator) {
-            this.options = Object.assign({}, defaultOptions, options);
+            this.options = $.extend({}, defaultOptions, options);
             this.curPaginatorParam = { // 当前分页参数
                 startIndex: 0,
                 pageSize: this.options.PAGE_SIZE_LIST[0]
@@ -52,6 +52,8 @@ var JqueryCommonPaginator = (function() {
             this.curPageIndex = 1; // 当前选中的页码索引，以1为起点
             this.currentList = []; // 当前页的列表数据
             this.isTriggered = false; // 是否调用过trigger()
+            this.specialPaginatorParam = false; // 是否指定了特定的分页参数
+            this.specialPageIndex = false; // 是否指定了特定的页码
         } else {
             return new JqueryCommonPaginator(options);
         }
@@ -67,7 +69,7 @@ var JqueryCommonPaginator = (function() {
     defaultOptions.userParam = {};
 
     // 用户自定义，默认的每页条数数据
-    defaultOptions.PAGE_SIZE_LIST = [5, 10, 20];
+    defaultOptions.PAGE_SIZE_LIST = [4, 10, 20];
 
     // 相关的页面dom选型器。用户可自定义
     defaultOptions.DOM_SELECTORS = {
@@ -218,12 +220,9 @@ var JqueryCommonPaginator = (function() {
         $(this.options.DOM_SELECTORS.PAGE_HINT_SELECTOR).empty();
         $(this.options.DOM_SELECTORS.PAGE_SIZE_SELECTOR).empty();
 
-        var html = `
-            <div class="crm-no-info-img"></div>
-            <div class="text-center">查询不到对应的数据~</div>
-        `;
+        var html = '<div class="crm-no-info-img"></div>' +
+            '<div class="text-center">查询不到对应的数据~</div>';
         $(this.options.DOM_SELECTORS.LIST_SELECTOR).html(html);
-
     }
 
     /**
@@ -240,7 +239,7 @@ var JqueryCommonPaginator = (function() {
                 if (page !== _this.curPageIndex) { // 只有点击的是不同的页码，才执行后续请求
                     _this.curPageIndex = page;
 
-                    _this.curPaginatorParam = Object.assign(_this.curPaginatorParam, { // 更新当前分页参数
+                    _this.curPaginatorParam = $.extend(_this.curPaginatorParam, { // 更新当前分页参数
                         startIndex: _this.curPaginatorParam.pageSize * (page - 1)
                     });
 
@@ -288,22 +287,19 @@ var JqueryCommonPaginator = (function() {
         return this.currentList;
     };
 
-    /* ------------------------------------------    setter      ------------------------------------------------- */
-
-    /**
-     * 更新用户自定义参数
-     */
-    JqueryCommonPaginator.prototype.setUserParam = function(newUserParam) {
-        this.options.userParam = newUserParam;
-
-        if (this.isTriggered) { // 如果已经trigger
-            this.curPaginatorParam.startIndex = 0; // 重置分页参数，并使用当前分页大小
-            this.curPageIndex = 1; // 重置选中的页码
-
-            _refresh.call(this);
-        }
-        return this;
+    JqueryCommonPaginator.prototype.getCurrentPageIndex = function() { // 获取当前选中的页码
+        return this.curPageIndex;
     };
+
+    JqueryCommonPaginator.prototype.getCurrentPaginatorParam = function() { // 获取当前页的分页参数
+        return $.extend({}, this.curPaginatorParam);
+    };
+
+    JqueryCommonPaginator.prototype.getPageSizeList = function() { // 获取当前页的分页参数
+        return this.options.PAGE_SIZE_LIST;
+    };
+
+    /* -------------------------------------   list operation     -------------------------------------------- */
 
     /**
      * 删除当前页第index条数据
@@ -321,7 +317,7 @@ var JqueryCommonPaginator = (function() {
 
         // 只剩一条数据时
         this.curPageIndex = (this.curPageIndex > 1) ? (this.curPageIndex - 1) : 1;
-        this.curPaginatorParam = Object.assign(this.curPaginatorParam, { // 更新当前分页参数
+        this.curPaginatorParam = $.extend(this.curPaginatorParam, { // 更新当前分页参数
             startIndex: this.curPaginatorParam.pageSize * (this.curPageIndex - 1)
         });
 
@@ -351,7 +347,7 @@ var JqueryCommonPaginator = (function() {
 
         // 没有多余数据时
         this.curPageIndex = (this.curPageIndex > 1) ? (this.curPageIndex - 1) : 1;
-        this.curPaginatorParam = Object.assign(this.curPaginatorParam, { // 更新当前分页参数
+        this.curPaginatorParam = $.extend(this.curPaginatorParam, { // 更新当前分页参数
             startIndex: this.curPaginatorParam.pageSize * (this.curPageIndex - 1)
         });
 
@@ -366,7 +362,7 @@ var JqueryCommonPaginator = (function() {
      */
     JqueryCommonPaginator.prototype.deletePage = function() {
         this.curPageIndex = (this.curPageIndex > 1) ? (this.curPageIndex - 1) : 1;
-        this.curPaginatorParam = Object.assign(this.curPaginatorParam, { // 更新当前分页参数
+        this.curPaginatorParam = $.extend(this.curPaginatorParam, { // 更新当前分页参数
             startIndex: this.curPaginatorParam.pageSize * (this.curPageIndex - 1)
         });
 
@@ -448,6 +444,32 @@ var JqueryCommonPaginator = (function() {
         }
     };
 
+    /* ------------------------------------------    setter      ------------------------------------------------- */
+
+    /**
+     * 更新用户自定义参数
+     */
+    JqueryCommonPaginator.prototype.setUserParam = function(newUserParam) {
+        this.options.userParam = newUserParam;
+
+        if (this.isTriggered) { // 如果已经trigger
+            if (this.specialPaginatorParam) { // 如果指定了特定的分页参数，那么不重置
+                this.specialPaginatorParam = false;
+            } else {
+                this.curPaginatorParam.startIndex = 0; // 反之重置分页起点，并使用当前分页大小
+            }
+
+            if (this.specialPageIndex) { // 如果指定了特定的页码，那么不重置
+                this.specialPageIndex = false;
+            } else {
+                this.curPageIndex = 1; // 反之重置页码
+            }
+
+            _refresh.call(this);
+        }
+        return this;
+    };
+
     /**
      * 为防止用户初始化后，第一次过早的调用了setUserParam，需要使用此方法来显式触发.
      * 后续调用setUserParam后，就不需要使用此方法了。
@@ -472,9 +494,10 @@ var JqueryCommonPaginator = (function() {
         }
         var temp = {};
         temp[tagetOptionName] = newOptionValue;
-        this.options = Object.assign(this.options, temp);
+        this.options = $.extend(this.options, temp);
         return this;
     }
+
     /**
      * 设置新的分页大小选项。 注意此时需要更新this.curPaginatorParam的pageSize属性
      */
@@ -482,6 +505,24 @@ var JqueryCommonPaginator = (function() {
         this.curPaginatorParam.pageSize = newPageSizeList[0];
 
         return _setterHelper.call(this, "PAGE_SIZE_LIST", newPageSizeList, "Array");
+    };
+
+    /**
+     * 设置分页参数，应该同时重置curPaginatorParam和curPageIndex，否则会出问题
+     */
+    JqueryCommonPaginator.prototype.setPaginatorParam = function(paginatorParam) {
+        this.curPaginatorParam = $.extend({}, paginatorParam);
+        this.specialPaginatorParam = true; // 指定标志位，表明想要使用特定的分页参数
+        return this;
+    };
+
+    /**
+     * 设置选中页码，应该同时重置curPaginatorParam和curPageIndex，否则会出问题
+     */
+    JqueryCommonPaginator.prototype.setPageIndex = function(pageIndex) {
+        this.curPageIndex = pageIndex;
+        this.specialPageIndex = true; // 指定标志位，表明想要使用特定的页码
+        return this;
     };
 
     JqueryCommonPaginator.prototype.setDomSelectors = function(newSelectors) {
